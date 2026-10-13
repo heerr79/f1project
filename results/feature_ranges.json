@@ -1,0 +1,103 @@
+{
+  "tyre_age": {
+    "type": "numeric",
+    "min": 1.0,
+    "max": 67.0,
+    "p05": 2.0,
+    "p95": 34.0
+  },
+  "lap_number": {
+    "type": "numeric",
+    "min": 2.0,
+    "max": 78.0,
+    "p05": 5.0,
+    "p95": 63.0
+  },
+  "stint_number": {
+    "type": "numeric",
+    "min": 1.0,
+    "max": 8.0,
+    "p05": 1.0,
+    "p95": 4.0
+  },
+  "tyre_age_at_start": {
+    "type": "numeric",
+    "min": 0.0,
+    "max": 15.0,
+    "p05": 0.0,
+    "p95": 4.0
+  },
+  "previous_lap_time": {
+    "type": "numeric",
+    "min": 68.111,
+    "max": 186.061,
+    "p05": 72.0814,
+    "p95": 112.21
+  },
+  "track_temperature": {
+    "type": "numeric",
+    "min": 17.5,
+    "max": 50.2,
+    "p05": 24.8,
+    "p95": 48.0
+  },
+  "air_temperature": {
+    "type": "numeric",
+    "min": 15.7,
+    "max": 31.5,
+    "p05": 17.4,
+    "p95": 30.7
+  },
+  "humidity": {
+    "type": "numeric",
+    "min": 18.0,
+    "max": 80.0,
+    "p05": 21.0,
+    "p95": 74.0
+  },
+  "wind_speed": {
+    "type": "numeric",
+    "min": 0.0,
+    "max": 6.6,
+    "p05": 0.6,
+    "p95": 3.7
+  },
+  "rainfall": {
+    "type": "numeric",
+    "min": 0.0,
+    "max": 1.0,
+    "p05": 0.0,
+    "p95": 0.0
+  },
+  "rolling_prev_lap_time_mean_3": {
+    "type": "numeric",
+    "min": 68.25266666666667,
+    "max": 170.935,
+    "p05": 71.87716666666667,
+    "p95": 112.33885
+  },
+  "rolling_prev_lap_time_std_3": {
+    "type": "numeric",
+    "min": 0.0,
+    "max": 44.916225802412804,
+    "p05": 0.04596737973800104,
+    "p95": 4.464277684559569
+  },
+  "tyre_age_squared": {
+    "type": "numeric",
+    "min": 1.0,
+    "max": 4489.0,
+    "p05": 4.0,
+    "p95": 1156.0
+  },
+  "compound": {
+    "type": "categorical",
+    "values": [
+      "HARD",
+      "INTERMEDIATE",
+      "MEDIUM",
+      "SOFT",
+      "WET"
+    ]
+  }
+}

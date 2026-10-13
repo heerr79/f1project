@@ -97,7 +97,7 @@ export function PredictPage() {
 
       {error ? <EmptyState title="Prediction unavailable" message={error} /> : null}
 
-      {result ? (
+      {result && result.predicted_degradation_proxy != null ? (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard label="Predicted proxy" value={Number(result.predicted_degradation_proxy).toFixed(4)} accent />
@@ -107,9 +107,19 @@ export function PredictPage() {
           </div>
           <section className="panel p-5 text-sm text-f1-muted">
             <p>
-              <strong className="text-f1-text">Model:</strong> {String(result.model_version)}
+              <strong className="text-f1-text">Model:</strong> {String(result.model_version ?? 'Selected pipeline')} · Inference: {String(result.inference_ms ?? '—')} ms
             </p>
-            <p className="mt-2">{String(result.uncertainty_note)}</p>
+            <p className="mt-2">{String(result.uncertainty_note ?? '')}</p>
+            {Array.isArray(result.out_of_range_warnings) && result.out_of_range_warnings.length > 0 ? (
+              <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-amber-300">
+                <p className="font-semibold text-xs uppercase tracking-wide">Input range warnings (p05–p95):</p>
+                <ul className="mt-1 list-disc pl-4 text-xs space-y-0.5">
+                  {result.out_of_range_warnings.map((w, i) => (
+                    <li key={i}>{String(w)}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </section>
         </>
       ) : null}

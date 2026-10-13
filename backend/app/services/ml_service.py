@@ -25,13 +25,28 @@ def models_ready() -> bool:
     return (root() / "models" / "final_model.pkl").exists()
 
 
-def _load_pipe(name: str):
-    fname = MODEL_FILES.get(name)
-    p = root() / "models" / fname
-    if p.exists():
-        return joblib.load(p)
-    if name == joblib.load(root() / "models" / "model_metadata.pkl").get("best_model"):
-        return joblib.load(root() / "models" / "final_model.pkl")
+def _load_pipe(name: str | None = None):
+    if name and name in MODEL_FILES:
+        fname = MODEL_FILES[name]
+        p = root() / "models" / fname
+        if p.exists():
+            return joblib.load(p)
+
+    meta_path = root() / "models" / "model_metadata.pkl"
+    if meta_path.exists():
+        try:
+            meta = joblib.load(meta_path)
+            best = meta.get("best_model")
+            if name is None or name == best:
+                final_p = root() / "models" / "final_model.pkl"
+                if final_p.exists():
+                    return joblib.load(final_p)
+        except Exception:
+            pass
+
+    final_p = root() / "models" / "final_model.pkl"
+    if final_p.exists():
+        return joblib.load(final_p)
     return None
 
 
@@ -114,22 +129,26 @@ def shap_explain(row_id: int | None = None, feature: str | None = None) -> dict:
     if pipe is None:
         return {"available": False, "message": "Model artifact missing."}
 
-    features = meta["features"]
+    features = meta.get("features", [])
     X = row[features]
     model = pipe.named_steps["model"]
     prep = pipe.named_steps["prep"]
     Xt = prep.transform(X)
     names = prep.get_feature_names_out()
 
-    if best == "LinearRegression":
-        explainer = shap.LinearExplainer(model, Xt, feature_perturbation="interventional")
-    else:
-        explainer = shap.TreeExplainer(model)
-    sv = explainer.shap_values(Xt)
-    if isinstance(sv, list):
-        sv = sv[0]
-    sv = np.array(sv).reshape(-1)
-    base = float(explainer.expected_value if not isinstance(explainer.expected_value, np.ndarray) else explainer.expected_value[0])
+    try:
+        if best == "LinearRegression":
+            masker = np.zeros((1, Xt.shape[1]))
+            explainer = shap.LinearExplainer(model, masker)
+        else:
+            explainer = shap.TreeExplainer(model)
+        sv = explainer.shap_values(Xt)
+        if isinstance(sv, list):
+            sv = sv[0]
+        sv = np.array(sv).reshape(-1)
+        base = float(np.atleast_1d(getattr(explainer, "expected_value", 0.0))[0])
+    except Exception as e:
+        return {"available": False, "message": f"SHAP explanation computation error: {e}"}
     pred = float(pipe.predict(X[features])[0])
 
     contributions = [
@@ -255,7 +274,8 @@ def shap_explain_for_row(X: pd.DataFrame, features: list[str], pipe, model_name:
         Xt = prep.transform(X[features])
         names = prep.get_feature_names_out()
         if model_name == "LinearRegression":
-            ex = shap.LinearExplainer(model, Xt)
+            masker = np.zeros((1, Xt.shape[1]))
+            ex = shap.LinearExplainer(model, masker)
         else:
             ex = shap.TreeExplainer(model)
         sv = ex.shap_values(Xt)
@@ -281,4 +301,10 @@ def predict_compare(payload: dict) -> dict:
             continue
         pred = float(pipe.predict(X[features])[0])
         out.append({"model": name, "prediction": pred})
+    if not out:
+        best_name = meta.get("best_model", "SelectedModel")
+        pipe = _load_pipe(best_name) or _load_pipe(None)
+        if pipe is not None:
+            pred = float(pipe.predict(X[features])[0])
+            out.append({"model": best_name, "prediction": pred})
     return {"ok": True, "predictions": out, "out_of_range_warnings": warnings, "units": "proxy units"}

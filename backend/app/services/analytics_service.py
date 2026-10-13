@@ -114,6 +114,14 @@ def chart_filtered(column: str, bins: int = 40, **filters) -> dict:
     s = pd.to_numeric(df[column], errors="coerce").dropna()
     if s.empty:
         return {"available": False, "column": column}
+    if s.min() == s.max():
+        val = float(s.iloc[0])
+        return {
+            "available": True,
+            "column": column,
+            "n": int(len(s)),
+            "bins": [{"start": val - 0.5, "end": val + 0.5, "count": int(len(s))}],
+        }
     counts, edges = np.histogram(s, bins=bins)
     return {
         "available": True,
@@ -153,9 +161,15 @@ def degradation_extended(
     pred = pd.read_csv(pred_path) if pred_path.exists() else pd.DataFrame()
     merged_note = "Predicted degradation available for 2024 test rows only when merge keys match."
     if not pred.empty and "year" in df.columns:
+        merge_cols = ["year", "race", "circuit", "compound", "tyre_age"]
+        if "driver" in df.columns and "driver" in pred.columns:
+            merge_cols.append("driver")
+        if "stint_number" in df.columns and "stint_number" in pred.columns:
+            merge_cols.append("stint_number")
+        pred_sub = pred[merge_cols + ["predicted"]].drop_duplicates(subset=merge_cols)
         m = df.merge(
-            pred[["year", "race", "circuit", "compound", "tyre_age", "predicted"]],
-            on=["year", "race", "circuit", "compound", "tyre_age"],
+            pred_sub,
+            on=merge_cols,
             how="left",
             suffixes=("", "_pred"),
         )
@@ -216,20 +230,21 @@ def subgroup_errors() -> dict:
             )
         return sorted(rows, key=lambda x: x["MAE"], reverse=True)
 
-    df["tyre_age_bin"] = pd.cut(df["tyre_age"], bins=[0, 5, 10, 15, 25, 100], labels=["0-5", "6-10", "11-15", "16-25", "25+"])
-    df["stint_stage"] = df["stint_number"].apply(lambda x: "early" if x <= 1 else ("mid" if x <= 2 else "late"))
+    extra_groups = []
+    if "tyre_age" in df.columns:
+        df["tyre_age_bin"] = pd.cut(df["tyre_age"], bins=[-1, 5, 10, 15, 25, 100], labels=["0-5", "6-10", "11-15", "16-25", "25+"], include_lowest=True)
+        extra_groups += agg_group("tyre_age_bin", 50)
+    if "stint_number" in df.columns:
+        df["stint_stage"] = df["stint_number"].apply(lambda x: "early" if x <= 1 else ("mid" if x <= 2 else "late"))
+        extra_groups += agg_group("stint_stage", 50)
     if "rainfall" in df.columns:
         df["rain_bin"] = df["rainfall"].apply(lambda x: "wet" if x else "dry")
-        rain_groups = agg_group("rain_bin", 30)
-    else:
-        rain_groups = []
+        extra_groups += agg_group("rain_bin", 30)
 
     groups = (
         agg_group("compound", 50)
         + agg_group("circuit", 100)
-        + agg_group("tyre_age_bin", 50)
-        + agg_group("stint_stage", 50)
-        + rain_groups
+        + extra_groups
     )
     large = df.nlargest(25, "abs_error").replace({np.nan: None}).to_dict(orient="records")
     return {"available": True, "groups": groups, "large_errors": large, "residual_mean": float(df["residual"].mean())}

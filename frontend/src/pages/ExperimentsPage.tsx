@@ -48,7 +48,7 @@ export function ExperimentsPage() {
             <pre className="max-h-[520px] overflow-auto rounded-lg bg-black/40 p-4 text-xs text-f1-muted">{JSON.stringify(cfg, null, 2)}</pre>
           </ChartPanel>
           <ChartPanel title="Data dictionary">
-            <pre className="max-h-80 overflow-auto text-xs">{JSON.stringify(manifest.dictionary, null, 2)}</pre>
+            <pre className="max-h-80 overflow-auto text-xs">{JSON.stringify(manifest.data_dictionary ?? manifest.dictionary, null, 2)}</pre>
           </ChartPanel>
         </>
       )}

@@ -211,6 +211,22 @@ def analysis_subgroups():
     return analytics_service.subgroup_errors()
 
 
+@app.get("/api/analytics/drivers")
+def analytics_drivers():
+    try:
+        return analytics_service.drivers_and_teams_overview()
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+
+
+@app.get("/api/analytics/driver/{driver_name}")
+def analytics_driver_detail(driver_name: str):
+    try:
+        return analytics_service.driver_detail(driver_name)
+    except (FileNotFoundError, ValueError) as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+
+
 @app.get("/api/reliability/bootstrap")
 def reliability_bootstrap():
     return analytics_service.bootstrap_metric_ci()
@@ -234,12 +250,18 @@ def explainability_shap(row_id: int | None = None, feature: str | None = None):
 @app.get("/api/explainability/sample-rows")
 def explainability_sample_rows():
     p = data_service.root() / "results" / "shap_test_sample.csv"
-    if not p.exists():
-        return {"available": False, "rows": []}
     import pandas as pd
 
-    df = pd.read_csv(p)[["row_id", "compound", "tyre_age", "lap_number", "stint_number"]].head(100)
-    return {"available": True, "rows": df.replace({float("nan"): None}).to_dict(orient="records")}
+    if p.exists():
+        df = pd.read_csv(p)[["row_id", "compound", "tyre_age", "lap_number", "stint_number"]].head(100)
+        return {"available": True, "rows": df.replace({float("nan"): None}).to_dict(orient="records")}
+    tp = data_service.root() / "results" / "test_predictions.csv"
+    if tp.exists():
+        df = pd.read_csv(tp).head(100).copy()
+        df["row_id"] = range(len(df))
+        cols = [c for c in ["row_id", "compound", "tyre_age", "lap_number", "stint_number"] if c in df.columns]
+        return {"available": True, "rows": df[cols].replace({float("nan"): None}).to_dict(orient="records")}
+    return {"available": False, "rows": []}
 
 
 @app.post("/api/predict/compare")

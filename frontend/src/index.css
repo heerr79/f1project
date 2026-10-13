@@ -41,7 +41,7 @@ body {
 }
 
 .panel {
-  @apply rounded-2xl border border-f1-border/90 bg-f1-panel/95 shadow-[0_8px_32px_rgba(0, 0, 0, 0.35)] backdrop-blur-sm;
+  @apply rounded-2xl border border-f1-border/90 bg-f1-panel/95 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-sm;
 }
 
 .panel-inner {

@@ -431,6 +431,11 @@ def train_all(csv_path: Path | None = None) -> dict:
     names = tree_pipe.named_steps["prep"].get_feature_names_out()
     explainer = shap.TreeExplainer(tree_pipe.named_steps["model"])
     sv = explainer.shap_values(Xt)
+    if isinstance(sv, list):
+        sv = sv[0]
+    sv = np.array(sv)
+    if sv.ndim > 2:
+        sv = sv.squeeze()
     imp = np.abs(sv).mean(axis=0)
     shap_df = pd.DataFrame({"feature": names, "mean_abs_shap": imp}).sort_values("mean_abs_shap", ascending=False)
     shap_df.to_csv(root / "results" / "shap_importance.csv", index=False)
@@ -469,7 +474,7 @@ def train_all(csv_path: Path | None = None) -> dict:
     for col in FEATURES:
         if col in train.columns:
             s = train[col]
-            if s.dtype == object:
+            if col in CAT_FEATURES or s.dtype == object or pd.api.types.is_string_dtype(s):
                 feature_ranges[col] = {"type": "categorical", "values": sorted(s.dropna().unique().tolist())}
             else:
                 feature_ranges[col] = {

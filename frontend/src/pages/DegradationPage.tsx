@@ -49,15 +49,15 @@ export function DegradationPage() {
 
       <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-5">
         {[
-          ['season', filters.seasons, season, setSeason],
-          ['race', filters.races, race, setRace],
-          ['compound', filters.compounds, compound, setCompound],
-          ['driver', filters.drivers, driver, setDriver],
-          ['stint', filters.stints, stint, setStint],
-        ].map(([label, opts, val, setVal]) => (
-          <select key={String(label)} className="panel-inner px-3 py-2 text-sm" value={String(val)} onChange={(e) => setVal(e.target.value)}>
+          { label: 'season', opts: filters.seasons, val: season, setVal: setSeason },
+          { label: 'race', opts: filters.races, val: race, setVal: setRace },
+          { label: 'compound', opts: filters.compounds, val: compound, setVal: setCompound },
+          { label: 'driver', opts: filters.drivers, val: driver, setVal: setDriver },
+          { label: 'stint', opts: filters.stints, val: stint, setVal: setStint },
+        ].map(({ label, opts, val, setVal }) => (
+          <select key={label} className="panel-inner px-3 py-2 text-sm" value={val} onChange={(e) => setVal(e.target.value)}>
             <option value="">All {label}</option>
-            {((opts as (string | number)[]) || []).map((s) => (
+            {(opts || []).map((s) => (
               <option key={String(s)} value={String(s)}>{s}</option>
             ))}
           </select>

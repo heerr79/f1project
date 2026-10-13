@@ -51,6 +51,20 @@ def session_detail(year: int, race: str, session_key: int) -> dict:
     circuit = str(df["circuit"].iloc[0])
 
     preds = _load_predictions()
+    pred_map: dict[tuple[str, str, int], float] = {}
+    if not preds.empty and year == 2024:
+        race_preds = preds[preds["race"] == race] if "race" in preds.columns else preds
+        for _, pr in race_preds.iterrows():
+            d_key = str(pr.get("driver", ""))
+            c_key = str(pr.get("compound", ""))
+            try:
+                a_key = int(round(float(pr.get("tyre_age", -1))))
+            except (ValueError, TypeError):
+                continue
+            pred_map[(d_key, c_key, a_key)] = float(pr["predicted"])
+            if ("", c_key, a_key) not in pred_map:
+                pred_map[("", c_key, a_key)] = float(pr["predicted"])
+
     drivers_out = []
     for driver, g in df.groupby("driver", sort=False):
         g = g.sort_values("lap_number")
@@ -61,14 +75,14 @@ def session_detail(year: int, race: str, session_key: int) -> dict:
             cumulative += float(row["lap_time_sec"])
             cum_list.append(cumulative)
             pred_val = None
-            if not preds.empty and year == 2024:
-                m = preds[
-                    (preds["race"] == race)
-                    & (preds["compound"] == str(row["compound"]))
-                    & (preds["tyre_age"] == float(row["tyre_age"]))
-                ]
-                if not m.empty:
-                    pred_val = float(m["predicted"].iloc[0])
+            if pred_map:
+                try:
+                    cur_age = int(round(float(row["tyre_age"])))
+                except (ValueError, TypeError):
+                    cur_age = -1
+                pred_val = pred_map.get((driver, str(row["compound"]), cur_age))
+                if pred_val is None:
+                    pred_val = pred_map.get(("", str(row["compound"]), cur_age))
             laps.append(
                 {
                     "lap_number": int(row["lap_number"]),

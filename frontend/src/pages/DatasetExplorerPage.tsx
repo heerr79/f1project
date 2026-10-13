@@ -174,16 +174,35 @@ export function DatasetExplorerPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <ChartPanel title="Data dictionary">
+        <ChartPanel title={`Data dictionary & schema (${columns.length || dictionary.length} cols)`}>
           <div className="max-h-64 overflow-auto text-xs">
             <table className="w-full text-left">
-              <thead className="text-f1-muted"><tr><th className="p-2">Column</th><th className="p-2">Role</th><th className="p-2">Description</th></tr></thead>
+              <thead className="text-f1-muted">
+                <tr>
+                  <th className="p-2">Column</th>
+                  <th className="p-2">Role / Type</th>
+                  <th className="p-2">Details</th>
+                </tr>
+              </thead>
               <tbody>
-                {dictionary.map((d) => (
-                  <tr key={d.column} className="border-t border-f1-border/50">
-                    <td className="p-2 font-mono">{d.column}</td><td className="p-2">{d.role}</td><td className="p-2 text-f1-muted">{d.description}</td>
-                  </tr>
-                ))}
+                {dictionary.map((d) => {
+                  const colInfo = columns.find((c) => c.name === d.column)
+                  return (
+                    <tr key={d.column} className="border-t border-f1-border/50">
+                      <td className="p-2 font-mono">{d.column}</td>
+                      <td className="p-2">
+                        <span className="rounded bg-f1-panel-2 px-1.5 py-0.5 text-[11px] text-f1-red">{d.role}</span>
+                        {colInfo ? <span className="ml-1 text-[10px] text-f1-muted">({String(colInfo.dtype)})</span> : null}
+                      </td>
+                      <td className="p-2 text-f1-muted">
+                        {d.description}
+                        {colInfo && colInfo.unique !== undefined ? (
+                          <span className="ml-2 text-[10px] text-f1-muted/70">· {String(colInfo.unique)} unique</span>
+                        ) : null}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

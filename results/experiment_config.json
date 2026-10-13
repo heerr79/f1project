@@ -1,0 +1,59 @@
+{
+  "available": true,
+  "random_seed": 42,
+  "temporal_split": {
+    "train_season": 2023,
+    "test_season": 2024
+  },
+  "train_n": 21885,
+  "test_n": 24227,
+  "features": [
+    "tyre_age",
+    "lap_number",
+    "stint_number",
+    "tyre_age_at_start",
+    "previous_lap_time",
+    "track_temperature",
+    "air_temperature",
+    "humidity",
+    "wind_speed",
+    "rainfall",
+    "rolling_prev_lap_time_mean_3",
+    "rolling_prev_lap_time_std_3",
+    "tyre_age_squared",
+    "compound"
+  ],
+  "target": "TARGET",
+  "target_definition": "TARGET = (lap_time_sec - previous_lap_time) / delta_tyre_age; lap-time degradation proxy.",
+  "preprocessing": "Median/mode imputation + standard scaling (numeric) + one-hot (compound); fit on 2023 only.",
+  "selected_model": "LinearRegression",
+  "comparison": [
+    {
+      "MAE": 1.6263335495111575,
+      "RMSE": 4.024084335212357,
+      "R2": 0.003421819834067,
+      "model": "LinearRegression",
+      "train_season": 2023,
+      "test_season": 2024,
+      "status": "evaluated"
+    },
+    {
+      "MAE": 1.7056237232126985,
+      "RMSE": 4.650905516885347,
+      "R2": -0.3312274375272437,
+      "model": "RandomForest",
+      "train_season": 2023,
+      "test_season": 2024,
+      "status": "evaluated"
+    },
+    {
+      "MAE": 1.9338692230291448,
+      "RMSE": 4.487775164644453,
+      "R2": -0.239479670525933,
+      "model": "XGBoost",
+      "train_season": 2023,
+      "test_season": 2024,
+      "status": "evaluated"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "target_definition": "TARGET = (lap_time_sec - previous_lap_time) / delta_tyre_age; lap-time tyre degradation proxy, not physical wear.",
-  "degradation_rate_vs_proxy_corr": 0.083555070072874,
+  "degradation_rate_vs_proxy_corr": 0.0835550700728743,
   "degradation_rate_vs_proxy_mae": 1.591491680260013,
   "raw_rows": 50882,
   "clean_rows": 46112

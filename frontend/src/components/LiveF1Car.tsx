@@ -91,7 +91,7 @@ function F1CarSvg({ compound, compact }: { compound: string; compact: boolean })
   const accent = compound === 'SOFT' ? '#ff4d4d' : compound === 'HARD' ? '#e8e8e8' : '#e10600'
 
   return (
-    <svg width={w} height={h} viewBox="0 0 200 64" fill="none" aria-hidden className="drop-shadow-[0_8px_24px_rgba(225,6,0,0.35)]">
+    <svg width={w} height={h} viewBox="0 0 200 64" fill="none" aria-hidden style={{ filter: 'drop-shadow(0 8px 24px rgba(225, 6, 0, 0.35))' }}>
       <ellipse cx="100" cy="58" rx="70" ry="6" fill="rgba(0,0,0,0.45)" />
       <path d="M28 42h144l-6-10H46l-10-6H28v16z" fill="#141820" stroke="#3a4252" strokeWidth="1" />
       <path d="M52 26h68l22 10H44l8-10z" fill={accent} opacity="0.95" />

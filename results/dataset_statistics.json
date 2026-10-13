@@ -1,0 +1,7 @@
+{
+  "train_n": 21885,
+  "test_n": 24227,
+  "selected_model": "LinearRegression",
+  "target_mean": 0.006521870662734212,
+  "target_std": 4.291486676608277
+}

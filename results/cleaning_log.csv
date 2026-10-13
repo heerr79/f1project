@@ -1,0 +1,8 @@
+step,removed,reason,remaining
+exact_duplicate_rows,0,Identical rows,50882
+duplicate_session_lap,166,Duplicate session lap keys,50716
+pit_out_laps,1652,Pit-out laps excluded,49064
+invalid_lap_time,2,Lap time outside 60–200 s,49062
+no_tyre_age_increment,2484,Requires tyre age increment,46578
+missing_previous_lap,0,Requires previous lap time,46578
+proxy_outliers,466,"Outside 0.5–99.5 pct [-45.479, 30.670]",46112

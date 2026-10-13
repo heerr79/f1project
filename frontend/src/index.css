@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-f1-bg: #07080b;
+  --color-f1-panel: #0e1117;
+  --color-f1-panel-2: #151922;
+  --color-f1-border: #2a3140;
+  --color-f1-red: #e10600;
+  --color-f1-red-dim: #a00400;
+  --color-f1-red-glow: #ff2a22;
+  --color-f1-text: #f4f6fa;
+  --color-f1-muted: #8b95a8;
+  --font-display: 'Orbitron', 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-f1-bg);
+  color: var(--color-f1-text);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -30%, rgba(225, 6, 0, 0.12), transparent 50%),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: auto, 28px 28px, 28px 28px;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.panel {
+  @apply rounded-2xl border border-f1-border/90 bg-f1-panel/95 shadow-[0_8px_32px_rgba(0, 0, 0, 0.35)] backdrop-blur-sm;
+}
+
+.panel-inner {
+  @apply rounded-xl border border-f1-border/60 bg-f1-panel-2/90;
+}
+
+.panel-glow {
+  box-shadow:
+    0 0 0 1px rgba(225, 6, 0, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.nav-active-glow {
+  box-shadow: inset 3px 0 0 var(--color-f1-red);
+}
+
+@keyframes f1-drive {
+  0% {
+    transform: translateX(-15%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(55vw) translateY(-1px);
+  }
+
+  100% {
+    transform: translateX(calc(100vw + 15%)) translateY(0);
+  }
+}
+
+@media (min-width: 1024px) {
+  @keyframes f1-drive {
+    0% {
+      transform: translateX(-10%) translateY(0);
+    }
+
+    50% {
+      transform: translateX(42vw) translateY(-1px);
+    }
+
+    100% {
+      transform: translateX(calc(100% + 10%)) translateY(0);
+    }
+  }
+}
+
+.f1-car-drive {
+  animation: f1-drive 7s linear infinite;
+}
+
+@keyframes wheel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.wheel-spin {
+  animation: wheel-spin 0.45s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes rear-light-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.rear-light-pulse {
+  animation: rear-light-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes speed-line-move {
+  0% {
+    transform: translateX(0) scaleX(0.2);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateX(-120px) scaleX(1);
+    opacity: 0;
+  }
+}
+
+.speed-line {
+  animation: speed-line-move 1.2s linear infinite;
+}
+
+@keyframes track-glow-pulse {
+
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 0.75;
+  }
+}
+
+.track-glow {
+  animation: track-glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.45s ease-out both;
+}
+
+/* Recharts polish */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #2a3140 !important;
+}
+
+.recharts-text {
+  fill: #8b95a8 !important;
+}

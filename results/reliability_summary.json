@@ -1,0 +1,11 @@
+{
+  "method": "split_conformal",
+  "confidence_level": 0.9,
+  "calibration_season": 2023,
+  "calibration_fraction": "last 20% of 2023 races",
+  "q_hat": 5.522281649678209,
+  "empirical_coverage_2024": 0.8774095017955174,
+  "mean_interval_width": 11.044563299356415,
+  "corr_abs_error_width": -0.025276761416151948,
+  "assumptions": "Exchangeability between calibration and test data; coverage may degrade under 2023\u21922024 shift."
+}
